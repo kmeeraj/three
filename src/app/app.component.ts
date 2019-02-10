@@ -8,7 +8,7 @@ import {
   PerspectiveCamera,
   Renderer,
   Scene,
-  SphereGeometry,
+  SphereGeometry, TorusGeometry,
   WebGLRenderer
 } from 'three';
 
@@ -21,7 +21,7 @@ export class AppComponent implements AfterViewInit {
 
   scene: Scene;
   camera: Camera;
-  sphere: Mesh;
+  torus: Mesh;
   renderer: Renderer;
   public fieldOfView = 60;
   public nearClippingPane = 1;
@@ -43,7 +43,7 @@ export class AppComponent implements AfterViewInit {
   ngAfterViewInit() {
     this.createScene();
     this.createCamera();
-    this.createSphere();
+    this.createTorus();
     this.startRendering();
   }
 
@@ -86,16 +86,16 @@ export class AppComponent implements AfterViewInit {
   }
 
   public render() {
-    this.sphere.rotation.x += this.ADD;
-    this.sphere.rotation.y += this.ADD;
-    this.sphere.rotation.z += this.ADD;
+    this.torus.rotation.x += this.ADD;
+    this.torus.rotation.y += this.ADD;
+    this.torus.rotation.z += this.ADD;
     this.renderer.render(this.scene, this.camera);
   }
 
-  private createSphere() {
-    let geometry = new SphereGeometry(4, 30 , 30);
+  private createTorus() {
+    let geometry = new TorusGeometry(5, 1 , 30, 30, Math.PI);
     let material = new MeshBasicMaterial({color: 0xffffff, wireframe: true});
-    this.sphere = new Mesh(geometry, material);
-    this.scene.add(this.sphere);
+    this.torus = new Mesh(geometry, material);
+    this.scene.add(this.torus);
   }
 }
