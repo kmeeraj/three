@@ -86,14 +86,14 @@ export class AppComponent implements AfterViewInit {
   }
 
   public render() {
-    this.sphere.rotation.x += this.ADD;
+    // this.sphere.rotation.x += this.ADD;
     this.sphere.rotation.y += this.ADD;
-    this.sphere.rotation.z += this.ADD;
+    // this.sphere.rotation.z += this.ADD;
     this.renderer.render(this.scene, this.camera);
   }
 
   private createSphere() {
-    let geometry = new SphereGeometry(4, 30 , 30);
+    let geometry = new SphereGeometry(4, 30 , 30, 0 , Math.PI);
     let material = new MeshBasicMaterial({color: 0xffffff, wireframe: true});
     this.sphere = new Mesh(geometry, material);
     this.scene.add(this.sphere);
