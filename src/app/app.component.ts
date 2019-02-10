@@ -15,7 +15,7 @@ export class AppComponent implements AfterViewInit {
   public fieldOfView = 60;
   public nearClippingPane = 1;
   public farClippingPane = 1000;
-  ADD = 0.01;
+  ADD = 0.1;
 
   constructor() {
     this.render = this.render.bind(this);
@@ -78,8 +78,8 @@ export class AppComponent implements AfterViewInit {
     // console.log("Hello");
 
     this.renderer.render(this.scene, this.camera);
-    this.cube.position.x += this.ADD;
-    this.cube.rotation.z += this.ADD;
+    // his.cube.position.x += this.ADD;
+    this.cube.rotation.y += this.ADD;
     if (this.cube.position.x <= -3 || this.cube.position.x >= 3) {
       this.ADD *= -1;
     }
