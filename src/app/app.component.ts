@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
-import {Camera, Color, PerspectiveCamera, Renderer, Scene, WebGLRenderer} from 'three';
+import {BoxGeometry, Camera, Color, Mesh, MeshBasicMaterial, PerspectiveCamera, Renderer, Scene, WebGLRenderer} from 'three';
 
 @Component({
   selector: 'app-root',
@@ -10,10 +10,12 @@ export class AppComponent implements AfterViewInit {
   title = 'threed';
   scene: Scene;
   camera: Camera;
+  cube: Mesh;
   renderer: Renderer;
   public fieldOfView = 60;
   public nearClippingPane = 1;
   public farClippingPane = 1000;
+  ADD = 0.01;
 
   constructor() {
     this.render = this.render.bind(this);
@@ -30,12 +32,13 @@ export class AppComponent implements AfterViewInit {
   ngAfterViewInit() {
     this.createScene();
     this.createCamera();
+    this.createCube();
     this.startRendering();
   }
 
   private createScene() {
     this.scene = new Scene();
-    this.scene.background = new Color(0x123456);
+    this.scene.background = new Color(0xababab);
   }
 
   private createCamera() {
@@ -46,6 +49,7 @@ export class AppComponent implements AfterViewInit {
       this.farClippingPane
     );
     this.camera.position.z = 5;
+
   }
 
   private getAspectRatio(): number {
@@ -71,7 +75,19 @@ export class AppComponent implements AfterViewInit {
   }
 
   public render() {
-    console.log("Hello");
+    // console.log("Hello");
+
     this.renderer.render(this.scene, this.camera);
+    this.cube.position.x += this.ADD;
+    if (this.cube.position.x <= -3 || this.cube.position.x >= 3) {
+      this.ADD *= -1;
+    }
+  }
+
+  private createCube() {
+    let geometry = new BoxGeometry(1,1,1);
+    let material = new MeshBasicMaterial({color:0x00a1cb});
+    this.cube = new Mesh(geometry, material);
+    this.scene.add(this.cube);
   }
 }
