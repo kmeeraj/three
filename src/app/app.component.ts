@@ -22,11 +22,33 @@ export class AppComponent implements AfterViewInit {
   scene: Scene;
   camera: Camera;
   torus: Mesh;
+  innertorus: Mesh
+  outertorus: Mesh;
+  sphere: Mesh;
+
   renderer: Renderer;
   public fieldOfView = 60;
   public nearClippingPane = 1;
   public farClippingPane = 1000;
   ADD = 0.01;
+
+  createDonut() {
+    let geometry = new TorusGeometry(3, 1 , 2, 30);
+    let material = new MeshBasicMaterial({color: 0xffffff, wireframe: true});
+    this.torus = new Mesh(geometry, material);
+    this.scene.add(this.torus);
+
+    let innergeometry = new TorusGeometry(6, 1 , 2, 30);
+    let innermaterial = new MeshBasicMaterial({color: 0xffffff, wireframe: true});
+    this.innertorus = new Mesh(innergeometry, innermaterial);
+    this.scene.add(this.innertorus);
+
+    let outergeometry = new TorusGeometry(9, 1 , 2, 30);
+    let outermaterial = new MeshBasicMaterial({color: 0xffffff, wireframe: true});
+    this.outertorus = new Mesh(outergeometry, outermaterial);
+    this.scene.add(this.outertorus);
+  }
+
 
   constructor() {
     this.render = this.render.bind(this);
@@ -43,7 +65,9 @@ export class AppComponent implements AfterViewInit {
   ngAfterViewInit() {
     this.createScene();
     this.createCamera();
-    this.createTorus();
+    this.createSphere();
+    this.createDonut();
+
     this.startRendering();
   }
 
@@ -86,16 +110,32 @@ export class AppComponent implements AfterViewInit {
   }
 
   public render() {
-    this.torus.rotation.x += this.ADD;
-    this.torus.rotation.y += this.ADD;
-    this.torus.rotation.z += this.ADD;
+    this.torus.rotation.x = 90;
+    this.torus.rotation.y = - 15;
+    if ( this.torus.position.y > 5 || this.torus.position.y < -5 ) {
+      this.ADD *= -1;
+    }
+    this.torus.position.y += this.ADD;
+
+    this.innertorus.rotation.x = 90;
+    this.innertorus.rotation.y = - 15;
+    this.innertorus.position.y += this.ADD;
+
+    this.outertorus.rotation.x = 90;
+    this.outertorus.rotation.y = - 15;
+    this.outertorus.position.y += this.ADD;
+
+    this.sphere.rotation.x = 90;
+    this.sphere.rotation.y = - 15;
+    this.sphere.position.y += this.ADD;
+
     this.renderer.render(this.scene, this.camera);
   }
 
-  private createTorus() {
-    let geometry = new TorusGeometry(5, 1 , 30, 30, Math.PI);
+  private createSphere() {
+    let geometry = new SphereGeometry(3, 30 , 30);
     let material = new MeshBasicMaterial({color: 0xffffff, wireframe: true});
-    this.torus = new Mesh(geometry, material);
-    this.scene.add(this.torus);
+    this.sphere = new Mesh(geometry, material);
+    this.scene.add(this.sphere);
   }
 }
