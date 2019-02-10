@@ -79,6 +79,7 @@ export class AppComponent implements AfterViewInit {
 
     this.renderer.render(this.scene, this.camera);
     this.cube.position.x += this.ADD;
+    this.cube.rotation.z += this.ADD;
     if (this.cube.position.x <= -3 || this.cube.position.x >= 3) {
       this.ADD *= -1;
     }
