@@ -34,17 +34,17 @@ export class AppComponent implements AfterViewInit {
 
   createDonut() {
     let geometry = new TorusGeometry(3, 1 , 2, 30);
-    let material = new MeshBasicMaterial({color: 0xffffff, wireframe: true});
+    let material = new MeshBasicMaterial({color: 0xaa00bb, wireframe: false});
     this.torus = new Mesh(geometry, material);
     this.scene.add(this.torus);
 
     let innergeometry = new TorusGeometry(6, 1 , 2, 30);
-    let innermaterial = new MeshBasicMaterial({color: 0xffffff, wireframe: true});
+    let innermaterial = new MeshBasicMaterial({color: 0x11abab, wireframe: false});
     this.innertorus = new Mesh(innergeometry, innermaterial);
     this.scene.add(this.innertorus);
 
     let outergeometry = new TorusGeometry(9, 1 , 2, 30);
-    let outermaterial = new MeshBasicMaterial({color: 0xffffff, wireframe: true});
+    let outermaterial = new MeshBasicMaterial({color: 0xaabbff, wireframe: false});
     this.outertorus = new Mesh(outergeometry, outermaterial);
     this.scene.add(this.outertorus);
   }
@@ -134,7 +134,7 @@ export class AppComponent implements AfterViewInit {
 
   private createSphere() {
     let geometry = new SphereGeometry(3, 30 , 30);
-    let material = new MeshBasicMaterial({color: 0xffffff, wireframe: true});
+    let material = new MeshBasicMaterial({color: 0xaabb00, wireframe: false});
     this.sphere = new Mesh(geometry, material);
     this.scene.add(this.sphere);
   }
