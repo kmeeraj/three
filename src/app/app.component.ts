@@ -1,5 +1,16 @@
 import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
-import {BoxGeometry, Camera, Color, Mesh, MeshBasicMaterial, PerspectiveCamera, Renderer, Scene, WebGLRenderer} from 'three';
+import {
+  BoxGeometry,
+  Camera,
+  Color,
+  Mesh,
+  MeshBasicMaterial,
+  PerspectiveCamera,
+  Renderer,
+  Scene,
+  SphereGeometry,
+  WebGLRenderer
+} from 'three';
 
 @Component({
   selector: 'app-root',
@@ -7,10 +18,10 @@ import {BoxGeometry, Camera, Color, Mesh, MeshBasicMaterial, PerspectiveCamera, 
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements AfterViewInit {
-  title = 'threed';
+
   scene: Scene;
   camera: Camera;
-  cube: Mesh;
+  sphere: Mesh;
   renderer: Renderer;
   public fieldOfView = 60;
   public nearClippingPane = 1;
@@ -32,13 +43,13 @@ export class AppComponent implements AfterViewInit {
   ngAfterViewInit() {
     this.createScene();
     this.createCamera();
-    this.createCube();
+    this.createSphere();
     this.startRendering();
   }
 
   private createScene() {
     this.scene = new Scene();
-    this.scene.background = new Color(0xababab);
+    this.scene.background = new Color(0x000000);
   }
 
   private createCamera() {
@@ -48,7 +59,7 @@ export class AppComponent implements AfterViewInit {
       this.nearClippingPane,
       this.farClippingPane
     );
-    this.camera.position.z = 5;
+    this.camera.position.z = 20;
 
   }
 
@@ -75,19 +86,16 @@ export class AppComponent implements AfterViewInit {
   }
 
   public render() {
-    // console.log("Hello");
-
+    this.sphere.rotation.x += this.ADD;
+    this.sphere.rotation.y += this.ADD;
+    this.sphere.rotation.z += this.ADD;
     this.renderer.render(this.scene, this.camera);
-    this.cube.position.x += this.ADD;
-    if (this.cube.position.x <= -3 || this.cube.position.x >= 3) {
-      this.ADD *= -1;
-    }
   }
 
-  private createCube() {
-    let geometry = new BoxGeometry(1,1,1);
-    let material = new MeshBasicMaterial({color:0x00a1cb});
-    this.cube = new Mesh(geometry, material);
-    this.scene.add(this.cube);
+  private createSphere() {
+    let geometry = new SphereGeometry(4, 30 , 30);
+    let material = new MeshBasicMaterial({color: 0xffffff, wireframe: true});
+    this.sphere = new Mesh(geometry, material);
+    this.scene.add(this.sphere);
   }
 }
