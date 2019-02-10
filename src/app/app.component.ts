@@ -1,5 +1,6 @@
 import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
 import {
+  AxesHelper,
   BoxGeometry,
   Camera,
   Color,
@@ -21,11 +22,10 @@ export class AppComponent implements AfterViewInit {
 
   scene: Scene;
   camera: Camera;
-  torus: Mesh;
-  innertorus: Mesh
-  outertorus: Mesh;
-  sphere: Mesh;
 
+  rings: Mesh[] = [];
+  sphere: Mesh;
+  axes: AxesHelper;
   renderer: Renderer;
   public fieldOfView = 60;
   public nearClippingPane = 1;
@@ -33,20 +33,26 @@ export class AppComponent implements AfterViewInit {
   ADD = 0.01;
 
   createDonut() {
-    let geometry = new TorusGeometry(3, 1 , 2, 30);
-    let material = new MeshBasicMaterial({color: 0xaa00bb, wireframe: false});
-    this.torus = new Mesh(geometry, material);
-    this.scene.add(this.torus);
+    let geometry = new TorusGeometry(5.1, 0.7 , 2, 50);
+    let material = new MeshBasicMaterial({color: 0xffe39f, wireframe: false});
+    let torus = new Mesh(geometry, material);
+    this.rings.push(torus);
 
-    let innergeometry = new TorusGeometry(6, 1 , 2, 30);
-    let innermaterial = new MeshBasicMaterial({color: 0x11abab, wireframe: false});
-    this.innertorus = new Mesh(innergeometry, innermaterial);
-    this.scene.add(this.innertorus);
+    let innergeometry = new TorusGeometry(6.9, 0.7 , 2, 50);
+    let innermaterial = new MeshBasicMaterial({color: 0xffad60, wireframe: false});
+    let innertorus = new Mesh(innergeometry, innermaterial);
+    this.rings.push(innertorus);
 
-    let outergeometry = new TorusGeometry(9, 1 , 2, 30);
-    let outermaterial = new MeshBasicMaterial({color: 0xaabbff, wireframe: false});
-    this.outertorus = new Mesh(outergeometry, outermaterial);
-    this.scene.add(this.outertorus);
+    let outergeometry = new TorusGeometry(8.5, 0.7 , 2, 50);
+    let outermaterial = new MeshBasicMaterial({color: 0xeac086, wireframe: false});
+    let outertorus = new Mesh(outergeometry, outermaterial);
+    this.rings.push(outertorus);
+
+    this.rings.forEach(ring => {
+      ring.rotation.x = 1.5;
+      ring.rotation.y = 0.5;
+      this.scene.add(ring);
+    });
   }
 
 
@@ -65,9 +71,9 @@ export class AppComponent implements AfterViewInit {
   ngAfterViewInit() {
     this.createScene();
     this.createCamera();
-    this.createSphere();
+    this.createPlanet();
     this.createDonut();
-
+    this.createAxesHelper();
     this.startRendering();
   }
 
@@ -83,8 +89,9 @@ export class AppComponent implements AfterViewInit {
       this.nearClippingPane,
       this.farClippingPane
     );
-    this.camera.position.z = 20;
-
+     this.camera.position.z = 20;
+      this.camera.position.x = 4;
+      this.camera.position.y = 5;
   }
 
   private getAspectRatio(): number {
@@ -110,32 +117,22 @@ export class AppComponent implements AfterViewInit {
   }
 
   public render() {
-    this.torus.rotation.x = 90;
-    this.torus.rotation.y = - 15;
-    if ( this.torus.position.y > 5 || this.torus.position.y < -5 ) {
+    this.camera.position.y += this.ADD;
+    if ( this.camera.position.y > 5 || this.camera.position.y < -5 ) {
       this.ADD *= -1;
     }
-    this.torus.position.y += this.ADD;
-
-    this.innertorus.rotation.x = 90;
-    this.innertorus.rotation.y = - 15;
-    this.innertorus.position.y += this.ADD;
-
-    this.outertorus.rotation.x = 90;
-    this.outertorus.rotation.y = - 15;
-    this.outertorus.position.y += this.ADD;
-
-    this.sphere.rotation.x = 90;
-    this.sphere.rotation.y = - 15;
-    this.sphere.position.y += this.ADD;
-
     this.renderer.render(this.scene, this.camera);
   }
 
-  private createSphere() {
-    let geometry = new SphereGeometry(3, 30 , 30);
-    let material = new MeshBasicMaterial({color: 0xaabb00, wireframe: false});
+  private createPlanet() {
+    let geometry = new SphereGeometry(4, 30 , 30);
+    let material = new MeshBasicMaterial({color: 0x8d5524, wireframe: false});
     this.sphere = new Mesh(geometry, material);
     this.scene.add(this.sphere);
+  }
+
+  private createAxesHelper() {
+    this.axes = new AxesHelper(5);
+    this.scene.add(this.axes);
   }
 }
