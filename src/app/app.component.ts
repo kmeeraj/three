@@ -48,13 +48,15 @@ export class AppComponent implements AfterViewInit {
       'Even thou General Leia is happy about Rey \n' +
       'in front of her, \n' +
       'she is totally jealous of her killer looks, \n' +
+      '(which is evidently true after stalking her \n'+
+      'Facebook and twitter accounts)\n' +
       'she is afraid all upcoming newly recruited \n' +
       'apprentice trained under Rey,\n' +
       ' will not listen to General Leia. \n' +
       'So after loosing all her kick ass weapons \n' +
       'like super laser beams \n' +
       'and flying aircraft carriers \n' +
-      '(which was later stolen by avengers), General Leia \n' +
+      '(which was later by avengers, well avengers had low budget), General Leia \n' +
       'looks for left over options. \n' +
       'Following are the left over options:\n' +
       '    1. Facebook\n' +
