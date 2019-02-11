@@ -13,6 +13,7 @@ import {
   WebGLRenderer
 } from 'three';
 import {jsondata} from '../font-dat';
+import {star_war_font} from '../star-war-font';
 
 @Component({
   selector: 'app-root',
@@ -32,15 +33,18 @@ export class AppComponent implements AfterViewInit {
   public fieldOfView = 60;
   public nearClippingPane = 1;
   public farClippingPane = 1000;
-  ADD = 0.01;
+  ADD = 0.06;
+  theta = 0;
 
   createFont() {
     this.loader = new FontLoader();
-    let font = this.loader.parse(jsondata);
-    this.geometry = new TextGeometry('Hello Meeraj', {font: font, size: 5, height: 2});
-    let material = new MeshBasicMaterial({color: 0X034b59});
+    let font = this.loader.parse(star_war_font);
+    let titles = 'The Lord shall bless the out of Zion, \n Jesus Christ, \n Halleujah, \n Praise the Lord, \n Thank you Jesus, \n Maranatha';
+    this.geometry = new TextGeometry(titles, {font: font, size: 3, height: 0.1});
+    let material = new MeshBasicMaterial({color: 0xffffff});
     this.text = new Mesh(this.geometry, material);
-    this.text.position.x = -15;
+    this.text.position.x = -25;
+    this.text.rotation.x = -0.9;
     this.scene.add(this.text);
   }
 
@@ -67,7 +71,7 @@ export class AppComponent implements AfterViewInit {
 
   private createScene() {
     this.scene = new Scene();
-    this.scene.background = new Color(0XFFFFFF);
+    this.scene.background = new Color(0x000000);
   }
 
   private createCamera() {
@@ -105,7 +109,8 @@ export class AppComponent implements AfterViewInit {
   }
 
   public render() {
-    this.text.rotation.x += this.ADD;
+    this.text.position.z -= this.ADD;
+    this.text.position.y += this.ADD / 2;
     this.renderer.render(this.scene, this.camera);
   }
 
