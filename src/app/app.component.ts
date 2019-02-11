@@ -98,23 +98,24 @@ export class AppComponent implements AfterViewInit {
   }
 
   public render() {
-    // this.cube.rotation.x += this.ADD;
+    this.cube.rotation.x += this.ADD;
     this.normals.update();
 
     this.renderer.render(this.scene, this.camera);
   }
 
   private createGeometry() {
-    //let geometry = new BoxGeometry(5,5,  5);
-    let geometry = new SphereGeometry(5, 30,  30);
-    let material = new MeshBasicMaterial({color: 0Xbbbbbb, wireframe: true});
-    // let material = new MeshNormalMaterial();
+    let geometry = new BoxGeometry(5,5,  5);
+    // let geometry = new SphereGeometry(5, 30,  30);
+    // let material = new MeshBasicMaterial({color: 0Xbbbbbb, wireframe: true});
+    let material = new MeshNormalMaterial();
 
-    // this.cube = new Mesh(geometry, material);
-    this.sphere = new Mesh(geometry, material);
-    // this.normals = new FaceNormalsHelper(this.cube, 5);
-    this.normals = new FaceNormalsHelper(this.sphere, 5);
-    this.scene.add(this.sphere);
+    this.cube = new Mesh(geometry, material);
+    // this.sphere = new Mesh(geometry, material);
+    this.normals = new FaceNormalsHelper(this.cube, 5);
+    // this.normals = new FaceNormalsHelper(this.sphere, 5);
+    // this.scene.add(this.sphere);
+    this.scene.add(this.cube);
     this.scene.add(this.normals);
   }
 
