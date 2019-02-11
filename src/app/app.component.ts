@@ -4,13 +4,30 @@ import {
   AxesHelper,
   BoxGeometry,
   Camera,
-  Color, CylinderGeometry, FaceNormalsHelper, Geometry, Line, LineBasicMaterial, LineDashedMaterial,
+  Color,
+  ConeGeometry,
+  CylinderGeometry,
+  DirectionalLight,
+  DoubleSide,
+  FaceNormalsHelper,
+  Geometry,
+  Line,
+  LineBasicMaterial,
+  LineDashedMaterial,
   Mesh,
-  MeshBasicMaterial, MeshDepthMaterial, MeshNormalMaterial,
+  MeshBasicMaterial,
+  MeshDepthMaterial,
+  MeshLambertMaterial,
+  MeshNormalMaterial,
   PerspectiveCamera,
-  PlaneGeometry, Points, PointsMaterial,
+  PlaneGeometry,
+  Points,
+  PointsMaterial,
   Renderer,
-  Scene, SphereGeometry, TorusGeometry, Vector3,
+  Scene,
+  SphereGeometry,
+  TorusGeometry,
+  Vector3,
   WebGLRenderer
 } from 'three';
 import {getOrSetAsInMap} from '@angular/animations/browser/src/render/shared';
@@ -30,7 +47,8 @@ export class AppComponent implements AfterViewInit {
   plane: Mesh;
   cube: Mesh;
   torus: Mesh;
-  sphere: Line;
+  sphere: Mesh;
+  cone: Mesh;
   normals: FaceNormalsHelper;
   axes: AxesHelper;
   cylinder: Line;
@@ -58,13 +76,14 @@ export class AppComponent implements AfterViewInit {
     this.createScene();
     this.createCamera();
     this.createAxes();
+    this.createLight();
     this.createGeometry();
     this.startRendering();
   }
 
   private createScene() {
     this.scene = new Scene();
-    this.scene.background = new Color(0X000000);
+    this.scene.background = new Color(0XFFFFFF);
   }
 
   private createCamera() {
@@ -74,7 +93,9 @@ export class AppComponent implements AfterViewInit {
       this.nearClippingPane,
       this.farClippingPane
     );
-    this.camera.position.z = 5;
+    this.camera.position.z = 20;
+    this.camera.position.x = 4;
+    this.camera.position.y = 3;
   }
 
   private getAspectRatio(): number {
@@ -100,27 +121,35 @@ export class AppComponent implements AfterViewInit {
   }
 
   public render() {
+    this.cube.rotation.x += this.ADD;
+    this.cube.rotation.y += this.ADD;
+    this.sphere.rotation.x += this.ADD;
+    this.sphere.rotation.y += this.ADD;
+    this.cone.rotation.x += this.ADD;
+    this.cone.rotation.y += this.ADD;
     this.renderer.render(this.scene, this.camera);
   }
 
-  randomInRange (from, to){
-    let x = Math.random() * ( to - from );
-    return x  + from;
-  }
 
   private createGeometry() {
-    let material = new PointsMaterial({color: 0xfffffff, size: 0.5});
-    let geometry = new Geometry();
+    let material = new MeshLambertMaterial( {
+      side: DoubleSide, color: 0x7fc5f9, emissive: 0x25673d, emissiveIntensity: 0.5
+    });
+    let geometry = new BoxGeometry(3, 3, 3);
+    this.cube = new Mesh(geometry, material);
+    this.cube.position.x = -6;
 
-    for (let i = 1; i <= 1000 ; i++) {
-      let x = this.randomInRange(-25, 25);
-      let y = this.randomInRange(-25, 25);
-      let z = this.randomInRange(-25, 25);
-      geometry.vertices.push(new Vector3(x, y, z));
-    }
-    geometry.computeFaceNormals();
-    this.particles = new Points(geometry, material);
-    this.scene.add(this.particles);
+    let sgeometry = new SphereGeometry(3, 30, 30);
+    this.sphere = new Mesh(sgeometry, material);
+    this.sphere.position.x = 0;
+
+    let cgeometry = new ConeGeometry(3, 4, 20, 1, true);
+    this.cone = new Mesh(cgeometry, material);
+    this.cone.position.x = 7
+
+    this.scene.add(this.cube);
+    this.scene.add(this.sphere);
+    this.scene.add(this.cone);
   }
 
   private createAxes() {
@@ -128,4 +157,8 @@ export class AppComponent implements AfterViewInit {
     this.scene.add(this.axes);
   }
 
+  private createLight() {
+    let directionLight = new DirectionalLight(0xFFFFFF);
+    this.scene.add(directionLight);
+  }
 }
