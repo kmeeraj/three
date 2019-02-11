@@ -3,7 +3,7 @@ import {
   AxesHelper,
   BoxGeometry,
   Camera,
-  Color,
+  Color, FaceNormalsHelper,
   Mesh,
   MeshBasicMaterial,
   PerspectiveCamera,
@@ -27,12 +27,15 @@ export class AppComponent implements AfterViewInit {
   cube1: Mesh;
   cube2: Mesh;
   plane: Mesh;
+  cube: Mesh;
+  torus: Mesh;
+  normals: FaceNormalsHelper;
   axes: AxesHelper;
 
   public fieldOfView = 60;
   public nearClippingPane = 1;
   public farClippingPane = 1000;
-  private ADD = 0.1;
+  private ADD = 0.01;
 
   constructor() {
     this.render = this.render.bind(this);
@@ -94,41 +97,20 @@ export class AppComponent implements AfterViewInit {
   }
 
   public render() {
-    this.cube1.position.x += this.ADD;
-    this.cube2.position.x -= this.ADD;
-    if(this.cube1.position.x > 6 || this.cube1.position.x < -6){
-      this.ADD *= -1;
-    }
+    this.cube.rotation.x += this.ADD;
+    this.normals.update();
+
     this.renderer.render(this.scene, this.camera);
   }
 
   private createGeometry() {
-    let geometry = new BoxGeometry(5,5, 5);
-    let material = new MeshBasicMaterial({color: 0Xc9b92b});
+    let geometry = new BoxGeometry(5,5,  5);
+    let material = new MeshBasicMaterial({color: 0Xbbbbbb, wireframe: true});
 
-    this.cube1 = new Mesh(geometry, material);
-    this.cube1.position.z = -6;
-    this.cube1.position.y = -5;
-
-    geometry = new BoxGeometry(5, 5, 5);
-    material = new MeshBasicMaterial({color: 0Xff0040, transparent:true, opacity: 0.5});
-
-    this.cube2 = new Mesh(geometry, material);
-    this.cube2.position.z = 6;
-    this.cube2.position.y = -5;
-
-    let planegeometry = new PlaneGeometry(1000, 1000, 50, 50);
-    material = new MeshBasicMaterial({color: 0Xa6f995, wireframe: true});
-
-    this.plane = new Mesh(planegeometry, material);
-    this.plane.rotation.x = Math.PI / 2;
-    this.plane.position.y = -100;
-
-    this.scene.add(this.cube1);
-    this.scene.add(this.cube2);
-    this.scene.add(this.plane);
-
-
+    this.cube = new Mesh(geometry, material);
+    this.normals = new FaceNormalsHelper(this.cube, 5);
+    this.scene.add(this.cube);
+    this.scene.add(this.normals);
   }
 
   private createAxes() {
