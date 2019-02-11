@@ -3,15 +3,16 @@ import {
   AxesHelper,
   BoxGeometry,
   Camera,
-  Color, DoubleSide, Face3, Geometry, Material,
+  Color, DoubleSide, Face3, FontLoader, Geometry, Material,
   Mesh,
   MeshBasicMaterial,
   PerspectiveCamera,
   Renderer,
   Scene,
-  SphereGeometry, TorusGeometry, Vector3,
+  SphereGeometry, TextGeometry, TorusGeometry, Vector3,
   WebGLRenderer
 } from 'three';
+import {jsondata} from '../font-dat';
 
 @Component({
   selector: 'app-root',
@@ -22,9 +23,10 @@ export class AppComponent implements AfterViewInit {
 
   scene: Scene;
   camera: Camera;
-  geometry: Geometry;
-  shape: Mesh;
+  geometry: TextGeometry;
+  loader: FontLoader;
   axes: AxesHelper;
+  text: Mesh;
 
   renderer: Renderer;
   public fieldOfView = 60;
@@ -32,24 +34,14 @@ export class AppComponent implements AfterViewInit {
   public farClippingPane = 1000;
   ADD = 0.01;
 
-  createGeometry() {
-    this.geometry = new Geometry();
-    this.geometry.vertices.push(new Vector3(3, 0, 0));
-    this.geometry.vertices.push(new Vector3(0, 5, 0));
-    this.geometry.vertices.push(new Vector3(0, 0, 2));
-    this.geometry.vertices.push(new Vector3(1, 2, -2));
-
-    this.geometry.faces.push(new Face3(0, 1, 2));
-    this.geometry.faces.push(new Face3(1, 2, 3));
-    this.geometry.faces.push(new Face3(0, 2, 3));
-
-
-
-    let material = new MeshBasicMaterial({
-      color: 0xffffff, side: DoubleSide, wireframe : true
-    });
-    this.shape = new Mesh(this.geometry, material);
-    this.scene.add(this.shape);
+  createFont() {
+    this.loader = new FontLoader();
+    let font = this.loader.parse(jsondata);
+    this.geometry = new TextGeometry('Hello Meeraj', {font: font, size: 5, height: 2});
+    let material = new MeshBasicMaterial({color: 0X034b59});
+    this.text = new Mesh(this.geometry, material);
+    this.text.position.x = -15;
+    this.scene.add(this.text);
   }
 
 
@@ -68,14 +60,14 @@ export class AppComponent implements AfterViewInit {
   ngAfterViewInit() {
     this.createScene();
     this.createCamera();
-    this.createGeometry();
+    this.createFont();
     this.createAxesHelper();
     this.startRendering();
   }
 
   private createScene() {
     this.scene = new Scene();
-    this.scene.background = new Color(0x000000);
+    this.scene.background = new Color(0XFFFFFF);
   }
 
   private createCamera() {
@@ -85,9 +77,9 @@ export class AppComponent implements AfterViewInit {
       this.nearClippingPane,
       this.farClippingPane
     );
-     this.camera.position.z = 20;
-      this.camera.position.x = 4;
-      this.camera.position.y = 5;
+     this.camera.position.z = 30;
+     this.camera.position.x = 2;
+     this.camera.position.y = 5;
   }
 
   private getAspectRatio(): number {
@@ -113,10 +105,7 @@ export class AppComponent implements AfterViewInit {
   }
 
   public render() {
-    // this.shape.rotation.x += this.ADD;
-   // this.shape.rotation.y += this.ADD;
-    this.geometry.vertices[1].y -= 0.02;
-    this.geometry.verticesNeedUpdate = true;
+    this.text.rotation.x += this.ADD;
     this.renderer.render(this.scene, this.camera);
   }
 
