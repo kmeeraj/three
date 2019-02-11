@@ -9,7 +9,7 @@ import {
   PerspectiveCamera,
   PlaneGeometry,
   Renderer,
-  Scene, SphereGeometry,
+  Scene, SphereGeometry, TorusGeometry,
   WebGLRenderer
 } from 'three';
 import {getOrSetAsInMap} from '@angular/animations/browser/src/render/shared';
@@ -101,21 +101,25 @@ export class AppComponent implements AfterViewInit {
     // this.cube.rotation.x += this.ADD;
     // this.cube.rotation.y += this.ADD;
     // this.normals.update();
-
+    this.torus.rotation.x += this.ADD;
+    this.torus.rotation.y += this.ADD;
     this.renderer.render(this.scene, this.camera);
   }
 
   private createGeometry() {
     // let geometry = new BoxGeometry(5,5,  5);
-    let geometry = new SphereGeometry(5, 30,  30);
+    // let geometry = new SphereGeometry(5, 30,  30);
+    let geometry = new TorusGeometry(5,2, 10 , 12);
     // let material = new MeshBasicMaterial({color: 0Xbbbbbb, wireframe: true});
     let material = new MeshNormalMaterial();
 
     // this.cube = new Mesh(geometry, material);
-    this.sphere = new Mesh(geometry, material);
+    // this.sphere = new Mesh(geometry, material);
+    this.torus = new Mesh(geometry, material);
     // this.normals = new FaceNormalsHelper(this.cube, 5);
     // this.normals = new FaceNormalsHelper(this.sphere, 5);
-    this.scene.add(this.sphere);
+    // this.scene.add(this.sphere);
+    this.scene.add(this.torus);
     // this.scene.add(this.cube);
     // this.scene.add(this.normals);
   }
