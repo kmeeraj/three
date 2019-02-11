@@ -18,7 +18,7 @@ import {
   MeshBasicMaterial,
   MeshDepthMaterial,
   MeshLambertMaterial,
-  MeshNormalMaterial,
+  MeshNormalMaterial, MeshPhongMaterial,
   PerspectiveCamera,
   PlaneGeometry,
   Points,
@@ -132,8 +132,13 @@ export class AppComponent implements AfterViewInit {
 
 
   private createGeometry() {
-    let material = new MeshLambertMaterial( {
-      side: DoubleSide, color: 0x7fc5f9, emissive: 0x25673d, emissiveIntensity: 0.5
+    let material = new MeshPhongMaterial({
+      color: 0x7fc5f9,
+      side: DoubleSide,
+      emissive: 0x234573d,
+      emissiveIntensity: 0.5,
+      shininess: 100,
+      specular: 0x9da0a00
     });
     let geometry = new BoxGeometry(3, 3, 3);
     this.cube = new Mesh(geometry, material);
