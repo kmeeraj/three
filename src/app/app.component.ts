@@ -3,13 +3,13 @@ import {
   AxesHelper,
   BoxGeometry,
   Camera,
-  Color,
+  Color, DoubleSide, Face3, Geometry, Material,
   Mesh,
   MeshBasicMaterial,
   PerspectiveCamera,
   Renderer,
   Scene,
-  SphereGeometry, TorusGeometry,
+  SphereGeometry, TorusGeometry, Vector3,
   WebGLRenderer
 } from 'three';
 
@@ -22,37 +22,34 @@ export class AppComponent implements AfterViewInit {
 
   scene: Scene;
   camera: Camera;
-
-  rings: Mesh[] = [];
-  sphere: Mesh;
+  geometry: Geometry;
+  shape: Mesh;
   axes: AxesHelper;
+
   renderer: Renderer;
   public fieldOfView = 60;
   public nearClippingPane = 1;
   public farClippingPane = 1000;
   ADD = 0.01;
 
-  createDonut() {
-    let geometry = new TorusGeometry(5.1, 0.7 , 2, 50);
-    let material = new MeshBasicMaterial({color: 0xffe39f, wireframe: false});
-    let torus = new Mesh(geometry, material);
-    this.rings.push(torus);
+  createGeometry() {
+    this.geometry = new Geometry();
+    this.geometry.vertices.push(new Vector3(3, 0, 0));
+    this.geometry.vertices.push(new Vector3(0, 5, 0));
+    this.geometry.vertices.push(new Vector3(0, 0, 2));
+    this.geometry.vertices.push(new Vector3(1, 2, -2));
 
-    let innergeometry = new TorusGeometry(6.9, 0.7 , 2, 50);
-    let innermaterial = new MeshBasicMaterial({color: 0xffad60, wireframe: false});
-    let innertorus = new Mesh(innergeometry, innermaterial);
-    this.rings.push(innertorus);
+    this.geometry.faces.push(new Face3(0, 1, 2));
+    this.geometry.faces.push(new Face3(1, 2, 3));
+    this.geometry.faces.push(new Face3(0, 2, 3));
 
-    let outergeometry = new TorusGeometry(8.5, 0.7 , 2, 50);
-    let outermaterial = new MeshBasicMaterial({color: 0xeac086, wireframe: false});
-    let outertorus = new Mesh(outergeometry, outermaterial);
-    this.rings.push(outertorus);
 
-    this.rings.forEach(ring => {
-      ring.rotation.x = 1.5;
-      ring.rotation.y = 0.5;
-      this.scene.add(ring);
+
+    let material = new MeshBasicMaterial({
+      color: 0xffffff, side: DoubleSide, wireframe : true
     });
+    this.shape = new Mesh(this.geometry, material);
+    this.scene.add(this.shape);
   }
 
 
@@ -71,8 +68,7 @@ export class AppComponent implements AfterViewInit {
   ngAfterViewInit() {
     this.createScene();
     this.createCamera();
-    this.createPlanet();
-    this.createDonut();
+    this.createGeometry();
     this.createAxesHelper();
     this.startRendering();
   }
@@ -117,19 +113,13 @@ export class AppComponent implements AfterViewInit {
   }
 
   public render() {
-    this.camera.position.y += this.ADD;
-    if ( this.camera.position.y > 5 || this.camera.position.y < -5 ) {
-      this.ADD *= -1;
-    }
+    // this.shape.rotation.x += this.ADD;
+   // this.shape.rotation.y += this.ADD;
+    this.geometry.vertices[1].y -= 0.02;
+    this.geometry.verticesNeedUpdate = true;
     this.renderer.render(this.scene, this.camera);
   }
 
-  private createPlanet() {
-    let geometry = new SphereGeometry(4, 30 , 30);
-    let material = new MeshBasicMaterial({color: 0x8d5524, wireframe: false});
-    this.sphere = new Mesh(geometry, material);
-    this.scene.add(this.sphere);
-  }
 
   private createAxesHelper() {
     this.axes = new AxesHelper(5);
