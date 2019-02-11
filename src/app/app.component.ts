@@ -4,13 +4,13 @@ import {
   AxesHelper,
   BoxGeometry,
   Camera,
-  Color, CylinderGeometry, FaceNormalsHelper, Line, LineBasicMaterial, LineDashedMaterial,
+  Color, CylinderGeometry, FaceNormalsHelper, Geometry, Line, LineBasicMaterial, LineDashedMaterial,
   Mesh,
   MeshBasicMaterial, MeshDepthMaterial, MeshNormalMaterial,
   PerspectiveCamera,
   PlaneGeometry, Points, PointsMaterial,
   Renderer,
-  Scene, SphereGeometry, TorusGeometry,
+  Scene, SphereGeometry, TorusGeometry, Vector3,
   WebGLRenderer
 } from 'three';
 import {getOrSetAsInMap} from '@angular/animations/browser/src/render/shared';
@@ -34,7 +34,7 @@ export class AppComponent implements AfterViewInit {
   normals: FaceNormalsHelper;
   axes: AxesHelper;
   cylinder: Line;
-  pcylinder: Points;
+  particles: Points;
 
   public fieldOfView = 75;
   public nearClippingPane = 1;
@@ -57,6 +57,8 @@ export class AppComponent implements AfterViewInit {
   ngAfterViewInit() {
     this.createScene();
     this.createCamera();
+    this.createAxes();
+    this.createGeometry();
     this.startRendering();
   }
 
@@ -98,32 +100,27 @@ export class AppComponent implements AfterViewInit {
   }
 
   public render() {
-    this.pcylinder.rotation.x += this.ADD;
-    this.sphere.rotation.x += this.ADD;
-
-    this.pcylinder.rotation.y += this.ADD;
-    this.sphere.rotation.y += this.ADD;
     this.renderer.render(this.scene, this.camera);
   }
 
+  randomInRange (from, to){
+    let x = Math.random() * ( to - from );
+    return x  + from;
+  }
+
   private createGeometry() {
-    // let material = new LineBasicMaterial({color: 0Xffffff, linewidth: 1});
-    // let material = new LineDashedMaterial({color: 0Xffffff, linewidth: 1, dashSize: 5, gapSize: 1});
-    let material = new PointsMaterial({color: 0xfffffff});
-    let geometry = new CylinderGeometry(3,2,  4);
-    this.pcylinder = new Points(geometry, material);
+    let material = new PointsMaterial({color: 0xfffffff, size: 0.5});
+    let geometry = new Geometry();
 
-    this.pcylinder.position.z = -10;
-    this.pcylinder.position.z = -5;
+    for (let i = 1; i <= 1000 ; i++) {
+      let x = this.randomInRange(-25, 25);
+      let y = this.randomInRange(-25, 25);
+      let z = this.randomInRange(-25, 25);
+      geometry.vertices.push(new Vector3(x, y, z));
+    }
     geometry.computeFaceNormals();
-
-    let sgeometry = new SphereGeometry(3, 30,  30);
-    this.sphere = new Line(sgeometry, material);
-    this.sphere.position.z = 0;
-    this.sphere.position.x = 5;
-    sgeometry.computeBoundingBox();
-    this.scene.add(this.pcylinder);
-    this.scene.add(this.sphere);
+    this.particles = new Points(geometry, material);
+    this.scene.add(this.particles);
   }
 
   private createAxes() {
