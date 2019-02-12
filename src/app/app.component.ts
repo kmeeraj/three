@@ -6,7 +6,7 @@ import {
   Camera,
   Color, ConeGeometry, DirectionalLight, DirectionalLightHelper,
   DoubleSide, HemisphereLight,
-  Mesh,
+  Mesh, MeshBasicMaterial,
   MeshPhongMaterial,
   PerspectiveCamera, PlaneGeometry,
   Renderer,
@@ -34,7 +34,7 @@ export class AppComponent implements AfterViewInit {
   private sphere: Mesh;
 
   private light: DirectionalLight;
-  ADD = 0.02;
+  ADD = 0.03;
   private lightHelper: DirectionalLightHelper;
 
   constructor() {
@@ -72,7 +72,7 @@ export class AppComponent implements AfterViewInit {
       this.nearClippingPane,
       this.farClippingPane
     );
-    this.camera.position.set(0, 10, 20);
+    this.camera.position.set(0, 0, 20);
   }
 
   private getAspectRatio(): number {
@@ -109,30 +109,41 @@ export class AppComponent implements AfterViewInit {
     if(this.light.intensity >= 8 || this.light.intensity <= 1){
       this.ADD *= -1;
     }*/
-    this.lightHelper.update();
+    //this.lightHelper.update();
+    this.light.position.x += this.ADD;
+    this.sphere.position.x += this.ADD;
+    if(this.light.position.x > 10 || this.light.position.x <= -10 ) {
+      this.ADD *= -1;
+    }
     this.renderer.render(this.scene, this.camera);
   }
 
   private createGeometry() {
     let geometry = new BoxGeometry(5, 5, 5);
-    let material = new MeshPhongMaterial({color: 0xdff913, shininess: 100, side: DoubleSide});
+    let material = new MeshPhongMaterial({color: 0X0f1d89, shininess: 100, side: DoubleSide});
     this.cube = new Mesh(geometry, material);
-    this.cube.position.set(5, 0, 0);
+    this.cube.position.set(-6, -5, -10);
 
-    let cgeometry = new SphereGeometry(5, 30, 30);
-    material = new MeshPhongMaterial({color: 0x66cdaa, shininess: 100, side: DoubleSide});
-    this.sphere = new Mesh(cgeometry, material);
-    this.sphere.position.set(-5, 5, -5);
-
-    geometry  = new BoxGeometry(2000, 1, 200);
-    let mat = new MeshPhongMaterial({ color: 0xffffff, side: DoubleSide});
-    this.plane = new Mesh(geometry, mat);
+    let pgeometry = new PlaneGeometry(1000, 1000, 50, 50);
+    let pmat = new MeshPhongMaterial({color: 0x693421, side: DoubleSide});
+    this.plane = new Mesh(pgeometry, pmat);
     this.plane.rotation.x = Math.PI / 2;
-    this.plane.position.z = -100;
+    this.plane.position.y = -100;
+
+    let cgeometry = new SphereGeometry(1, 30, 30);
+    let bmaterial = new MeshBasicMaterial({color: 0xffd700});
+    this.sphere = new Mesh(cgeometry, bmaterial);
+    this.sphere.position.set(10, 5, 0);
+
+    let cgeo = new ConeGeometry(3, 4, 20, 1, true);
+    this.cone = new Mesh(cgeo, material);
+    this.cone.position.x = 7;
+    this.cone.position.y = -5;
 
     this.scene.add(this.cube);
     this.scene.add(this.sphere);
     this.scene.add(this.plane);
+    this.scene.add(this.cone);
   }
 
   private createLight() {
@@ -141,10 +152,10 @@ export class AppComponent implements AfterViewInit {
     // this.light = new HemisphereLight(0x00ff00, 0x0000ff);
     this.light = new DirectionalLight(0xffffff);
     this.light.position.set(10, 5, 0);
-    this.lightHelper = new DirectionalLightHelper(this.light , 5, 0x000000);
-    this.scene.add(this.lightHelper);
-    this.light.target = this.sphere;
-    //this.light.intensity = 3;
+    // this.lightHelper = new DirectionalLightHelper(this.light , 5, 0x000000);
+    // this.scene.add(this.lightHelper);
+    // this.light.target = this.sphere;
+    // this.light.intensity = 3;
     this.scene.add(this.light);
   }
 }
