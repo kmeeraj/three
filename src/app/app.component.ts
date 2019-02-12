@@ -4,7 +4,7 @@ import {
   AxesHelper,
   BoxGeometry,
   Camera,
-  Color, ConeGeometry,
+  Color, ConeGeometry, DirectionalLight, DirectionalLightHelper,
   DoubleSide, HemisphereLight,
   Mesh,
   MeshPhongMaterial,
@@ -24,6 +24,7 @@ export class AppComponent implements AfterViewInit {
   scene: Scene;
   camera: Camera;
   renderer: Renderer;
+  axes: AxesHelper;
   public fieldOfView = 60;
   public nearClippingPane = 1;
   public farClippingPane = 1000;
@@ -32,8 +33,9 @@ export class AppComponent implements AfterViewInit {
   private plane: Mesh;
   private sphere: Mesh;
 
-  private light: AmbientLight;
+  private light: DirectionalLight;
   ADD = 0.02;
+  private lightHelper: DirectionalLightHelper;
 
   constructor() {
 
@@ -52,14 +54,15 @@ export class AppComponent implements AfterViewInit {
     this.createScene();
     this.createCamera();
     this.createAxes();
-    this. createLight();
+
     this.createGeometry();
+    this. createLight();
     this.startRendering();
   }
 
   private createScene() {
     this.scene = new Scene();
-    this.scene.background = new Color(0x000000);
+    this.scene.background = new Color(0xffffff);
   }
 
   private createCamera() {
@@ -106,7 +109,7 @@ export class AppComponent implements AfterViewInit {
     if(this.light.intensity >= 8 || this.light.intensity <= 1){
       this.ADD *= -1;
     }*/
-
+    this.lightHelper.update();
     this.renderer.render(this.scene, this.camera);
   }
 
@@ -122,8 +125,10 @@ export class AppComponent implements AfterViewInit {
     this.sphere.position.set(-5, 5, -5);
 
     geometry  = new BoxGeometry(2000, 1, 200);
-    let mat = new MeshPhongMaterial({ color: 0x693421, side: DoubleSide});
+    let mat = new MeshPhongMaterial({ color: 0xffffff, side: DoubleSide});
     this.plane = new Mesh(geometry, mat);
+    this.plane.rotation.x = Math.PI / 2;
+    this.plane.position.z = -100;
 
     this.scene.add(this.cube);
     this.scene.add(this.sphere);
@@ -133,7 +138,12 @@ export class AppComponent implements AfterViewInit {
   private createLight() {
     // this.light = new AmbientLight(0x63b8ff);
     // this.light = new HemisphereLight(0xffffff, 0x000000);
-    this.light = new HemisphereLight(0x00ff00, 0x0000ff);
+    // this.light = new HemisphereLight(0x00ff00, 0x0000ff);
+    this.light = new DirectionalLight(0xffffff);
+    this.light.position.set(10, 5, 0);
+    this.lightHelper = new DirectionalLightHelper(this.light , 5, 0x000000);
+    this.scene.add(this.lightHelper);
+    this.light.target = this.sphere;
     //this.light.intensity = 3;
     this.scene.add(this.light);
   }
