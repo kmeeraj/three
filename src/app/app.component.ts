@@ -4,13 +4,13 @@ import {
   AxesHelper,
   BoxGeometry,
   Camera,
-  Color, ConeGeometry,
+  Color, ConeGeometry, CylinderGeometry,
   DoubleSide,
   Mesh,
   MeshPhongMaterial,
   PerspectiveCamera, PlaneGeometry,
   Renderer,
-  Scene,
+  Scene, SphereGeometry, SpotLight,
   WebGLRenderer
 } from 'three';
 
@@ -22,7 +22,10 @@ import {
 export class AppComponent implements AfterViewInit {
   title = 'threed';
   scene: Scene;
-  camera: Camera;
+  camera: PerspectiveCamera;
+  cylinder: Mesh;
+  sphere: Mesh;
+
   renderer: Renderer;
   public fieldOfView = 60;
   public nearClippingPane = 1;
@@ -30,8 +33,9 @@ export class AppComponent implements AfterViewInit {
   private cube: Mesh;
   private cone: Mesh;
   private plane: Mesh;
-  private light: AmbientLight;
-  ADD = 0.02;
+  private light: SpotLight;
+  ADD = 0.1;
+  private axes: AxesHelper;
 
   constructor() {
 
@@ -57,7 +61,7 @@ export class AppComponent implements AfterViewInit {
 
   private createScene() {
     this.scene = new Scene();
-    this.scene.background = new Color(0xffffff);
+    this.scene.background = new Color(0X000000);
   }
 
   private createCamera() {
@@ -67,8 +71,8 @@ export class AppComponent implements AfterViewInit {
       this.nearClippingPane,
       this.farClippingPane
     );
-    this.camera.position.z = 20;
-  }
+    this.camera.position.set(0, 10, 20);
+;  }
 
   private getAspectRatio(): number {
     let height = this.canvas.clientHeight;
@@ -100,41 +104,39 @@ export class AppComponent implements AfterViewInit {
   }
 
   public render() {
-    this.light.intensity += this.ADD;
-    if(this.light.intensity >= 8 || this.light.intensity <= 1){
+    this.camera.fov += this.ADD;
+    this.camera.updateProjectionMatrix();
+    if( this.camera.fov > 100 || this.camera.fov < 50){
       this.ADD *= -1;
     }
-
     this.renderer.render(this.scene, this.camera);
   }
 
   private createGeometry() {
-    let geometry = new BoxGeometry(5, 5, 5);
-    let material = new MeshPhongMaterial({color: 0x0f1d89, shininess: 100, side: DoubleSide});
-    this.cube = new Mesh(geometry, material);
-    this.cube.position.x = -6;
-    this.cube.position.y = -5;
-    this.cube.position.z = -6;
+    let geometry = new CylinderGeometry(5, 5, 5);
+    let material = new MeshPhongMaterial({color: 0x448844, shininess: 100, side: DoubleSide});
+    this.cylinder = new Mesh(geometry, material);
+    this.cylinder.position.set(6, 0, -2);
 
-    let cgeometry = new ConeGeometry(3, 4, 20, 1, true);
-    this.cone = new Mesh(cgeometry, material);
-    this.cone.position.x = 7;
-    this.cone.position.y = -5;
+    let cgeometry = new SphereGeometry(5, 30, 30);
+    material = new MeshPhongMaterial({color: 0x693421, side: DoubleSide});
+    this.sphere = new Mesh(cgeometry, material);
+    this.sphere.position.set(-5, 5, 2);
 
     let pgeometry  = new PlaneGeometry(1000, 1000, 50, 50);
-    let mat = new MeshPhongMaterial({ color: 0x693421, side: DoubleSide});
+    let mat = new MeshPhongMaterial({ color: 0xabcdef, side: DoubleSide});
     this.plane = new Mesh(pgeometry, mat);
     this.plane.rotation.x = Math.PI / 2;
     this.plane.position.y = -100;
 
-    this.scene.add(this.cube);
-    this.scene.add(this.cone);
+    this.scene.add(this.cylinder);
+    this.scene.add(this.sphere);
     this.scene.add(this.plane);
   }
 
   private createLight() {
-    this.light = new AmbientLight(0xffffff);
-    this.light.intensity = 3;
+    this.light = new SpotLight(0xffffff, 1);
+    this.light.position.set(0, 10, 15);
     this.scene.add(this.light);
   }
 }
