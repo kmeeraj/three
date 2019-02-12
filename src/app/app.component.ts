@@ -5,12 +5,12 @@ import {
   BoxGeometry,
   Camera,
   Color, ConeGeometry,
-  DoubleSide,
+  DoubleSide, HemisphereLight,
   Mesh,
   MeshPhongMaterial,
   PerspectiveCamera, PlaneGeometry,
   Renderer,
-  Scene,
+  Scene, SphereGeometry,
   WebGLRenderer
 } from 'three';
 
@@ -30,6 +30,8 @@ export class AppComponent implements AfterViewInit {
   private cube: Mesh;
   private cone: Mesh;
   private plane: Mesh;
+  private sphere: Mesh;
+
   private light: AmbientLight;
   ADD = 0.02;
 
@@ -57,7 +59,7 @@ export class AppComponent implements AfterViewInit {
 
   private createScene() {
     this.scene = new Scene();
-    this.scene.background = new Color(0xffffff);
+    this.scene.background = new Color(0x000000);
   }
 
   private createCamera() {
@@ -67,7 +69,7 @@ export class AppComponent implements AfterViewInit {
       this.nearClippingPane,
       this.farClippingPane
     );
-    this.camera.position.z = 20;
+    this.camera.position.set(0, 10, 20);
   }
 
   private getAspectRatio(): number {
@@ -100,41 +102,39 @@ export class AppComponent implements AfterViewInit {
   }
 
   public render() {
-    this.light.intensity += this.ADD;
+    /*this.light.intensity += this.ADD;
     if(this.light.intensity >= 8 || this.light.intensity <= 1){
       this.ADD *= -1;
-    }
+    }*/
 
     this.renderer.render(this.scene, this.camera);
   }
 
   private createGeometry() {
     let geometry = new BoxGeometry(5, 5, 5);
-    let material = new MeshPhongMaterial({color: 0x0f1d89, shininess: 100, side: DoubleSide});
+    let material = new MeshPhongMaterial({color: 0xdff913, shininess: 100, side: DoubleSide});
     this.cube = new Mesh(geometry, material);
-    this.cube.position.x = -6;
-    this.cube.position.y = -5;
-    this.cube.position.z = -6;
+    this.cube.position.set(5, 0, 0);
 
-    let cgeometry = new ConeGeometry(3, 4, 20, 1, true);
-    this.cone = new Mesh(cgeometry, material);
-    this.cone.position.x = 7;
-    this.cone.position.y = -5;
+    let cgeometry = new SphereGeometry(5, 30, 30);
+    material = new MeshPhongMaterial({color: 0x66cdaa, shininess: 100, side: DoubleSide});
+    this.sphere = new Mesh(cgeometry, material);
+    this.sphere.position.set(-5, 5, -5);
 
-    let pgeometry  = new PlaneGeometry(1000, 1000, 50, 50);
+    geometry  = new BoxGeometry(2000, 1, 200);
     let mat = new MeshPhongMaterial({ color: 0x693421, side: DoubleSide});
-    this.plane = new Mesh(pgeometry, mat);
-    this.plane.rotation.x = Math.PI / 2;
-    this.plane.position.y = -100;
+    this.plane = new Mesh(geometry, mat);
 
     this.scene.add(this.cube);
-    this.scene.add(this.cone);
+    this.scene.add(this.sphere);
     this.scene.add(this.plane);
   }
 
   private createLight() {
-    this.light = new AmbientLight(0xffffff);
-    this.light.intensity = 3;
+    // this.light = new AmbientLight(0x63b8ff);
+    // this.light = new HemisphereLight(0xffffff, 0x000000);
+    this.light = new HemisphereLight(0x00ff00, 0x0000ff);
+    //this.light.intensity = 3;
     this.scene.add(this.light);
   }
 }
