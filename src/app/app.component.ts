@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, HostListener, ViewChild} from '@angular/core';
 import {
   AmbientLight,
   AxesHelper,
@@ -34,11 +34,16 @@ export class AppComponent implements AfterViewInit {
   private cone: Mesh;
   private plane: Mesh;
   private light: SpotLight;
-  ADD = 0.1;
+  ADD = 0.2;
+  LEFT = 37;
+  RIGHT = 39;
+  UP = 38;
+  DOWN = 40;
+  cubes = [];
+  _this = this;
   private axes: AxesHelper;
 
   constructor() {
-
     this.render = this.render.bind(this);
   }
 
@@ -56,7 +61,9 @@ export class AppComponent implements AfterViewInit {
     this.createAxes();
     this. createLight();
     this.createGeometry();
+
     this.startRendering();
+    document.addEventListener('keydown', (e) => this.onKeyDown(e), false);
   }
 
   private createScene() {
@@ -104,34 +111,44 @@ export class AppComponent implements AfterViewInit {
   }
 
   public render() {
-    this.camera.fov += this.ADD;
-    this.camera.updateProjectionMatrix();
-    if( this.camera.fov > 100 || this.camera.fov < 50){
-      this.ADD *= -1;
-    }
     this.renderer.render(this.scene, this.camera);
   }
 
+  randomInRange( from, to){
+    let x  = Math.random() * (to - from);
+    return from + x;
+
+  }
+
   private createGeometry() {
-    let geometry = new CylinderGeometry(5, 5, 5);
-    let material = new MeshPhongMaterial({color: 0x448844, shininess: 100, side: DoubleSide});
-    this.cylinder = new Mesh(geometry, material);
-    this.cylinder.position.set(6, 0, -2);
+    let geometry = new BoxGeometry(5, 5 , 5);
+    for ( let i = 0; i <= 10 ; i++ ) {
+      let material = new MeshPhongMaterial({
+        color: Math.random() * 0xffffff,
+        side: DoubleSide, shininess: 100
+      });
+      let cube = new Mesh(geometry, material);
+      cube.position.x = this.randomInRange(-20, 20);
+      cube.position.z = this.randomInRange(-10, 10);
+      this.cubes.push(cube);
+      this.scene.add(cube);
+    }
 
-    let cgeometry = new SphereGeometry(5, 30, 30);
-    material = new MeshPhongMaterial({color: 0x693421, side: DoubleSide});
-    this.sphere = new Mesh(cgeometry, material);
-    this.sphere.position.set(-5, 5, 2);
+  }
 
-    let pgeometry  = new PlaneGeometry(1000, 1000, 50, 50);
-    let mat = new MeshPhongMaterial({ color: 0xabcdef, side: DoubleSide});
-    this.plane = new Mesh(pgeometry, mat);
-    this.plane.rotation.x = Math.PI / 2;
-    this.plane.position.y = -100;
-
-    this.scene.add(this.cylinder);
-    this.scene.add(this.sphere);
-    this.scene.add(this.plane);
+  private onKeyDown(e) {
+    console.log(e.keyCode);
+    if (e.keyCode === this.LEFT) {
+      this.ADD = -0.2;
+    } else if (e.keyCode === this.RIGHT) {
+      this.ADD = 0.2;
+    } else if (e.keyCode === this.UP) {
+        this.scene.rotation.x += 0.2;
+    } else if (e.keyCode === this.DOWN) {
+      this.scene.rotation.x -= 0.2;
+    }
+    console.log(this.ADD);
+    this.cubes.forEach(cube => {console.log(this.ADD); cube.position.x += this.ADD; });
   }
 
   private createLight() {
