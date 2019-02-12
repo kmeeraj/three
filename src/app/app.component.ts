@@ -10,7 +10,7 @@ import {
   MeshPhongMaterial,
   PerspectiveCamera, PlaneGeometry,
   Renderer,
-  Scene, SphereGeometry, SpotLight,
+  Scene, SphereGeometry, SpotLight, Vector3,
   WebGLRenderer
 } from 'three';
 
@@ -34,9 +34,9 @@ export class AppComponent implements AfterViewInit {
   private cone: Mesh;
   private plane: Mesh;
   private light: SpotLight;
-  ADD = 0.1;
+  ADD = 0.01;
   private axes: AxesHelper;
-
+  theta = 0;
   constructor() {
 
     this.render = this.render.bind(this);
@@ -104,11 +104,10 @@ export class AppComponent implements AfterViewInit {
   }
 
   public render() {
-    this.camera.fov += this.ADD;
-    this.camera.updateProjectionMatrix();
-    if( this.camera.fov > 100 || this.camera.fov < 50){
-      this.ADD *= -1;
-    }
+    this.camera.lookAt(new Vector3(0, 0 , 0));
+    this.camera.position.x = 40 * Math.sin(this.theta);
+    this.camera.position.z = 40 * Math.cos(this.theta);
+    this.theta += this.ADD;
     this.renderer.render(this.scene, this.camera);
   }
 
@@ -127,7 +126,7 @@ export class AppComponent implements AfterViewInit {
     let mat = new MeshPhongMaterial({ color: 0xabcdef, side: DoubleSide});
     this.plane = new Mesh(pgeometry, mat);
     this.plane.rotation.x = Math.PI / 2;
-    this.plane.position.y = -100;
+    this.plane.position.y = -1;
 
     this.scene.add(this.cylinder);
     this.scene.add(this.sphere);
