@@ -4,7 +4,7 @@ import {
   AxesHelper,
   BoxGeometry,
   Camera,
-  Color, ConeGeometry, CylinderGeometry,
+  Color, ConeGeometry, CylinderGeometry, DirectionalLight, DirectionalLightHelper,
   DoubleSide,
   Mesh,
   MeshPhongMaterial, OrthographicCamera,
@@ -33,7 +33,7 @@ export class AppComponent implements AfterViewInit {
   private cube: Mesh;
   private cone: Mesh;
   private plane: Mesh;
-  private light: SpotLight;
+  private light: DirectionalLight;
   ADD = 0.01;
   private axes: AxesHelper;
   theta = 0;
@@ -54,7 +54,7 @@ export class AppComponent implements AfterViewInit {
   ngAfterViewInit() {
     this.createScene();
     this.createCamera();
-    this.switchCamera();
+    // this.switchCamera();
     this.createAxes();
     this. createLight();
     this.createGeometry();
@@ -73,7 +73,7 @@ export class AppComponent implements AfterViewInit {
       this.nearClippingPane,
       this.farClippingPane
     );
-    this.camera.position.set(0, 0, 40);
+    this.camera.position.set(0, 0, 50);
 ;  }
 
   private getAspectRatio(): number {
@@ -106,26 +106,33 @@ export class AppComponent implements AfterViewInit {
   }
 
   public render() {
-    this.camera.lookAt(new Vector3(0, 0 , 0));
-    this.camera.position.x = 40 * Math.sin(this.theta);
-    this.camera.position.z = 40 * Math.cos(this.theta);
+    this.camera.lookAt(this.sphere.position);
+    this.sphere.position.y = 20 * Math.sin(this.theta);
+    this.sphere.position.z = 20 * Math.cos(this.theta);
+    this.camera.position.y = this.sphere.position.y;
+    this.camera.position.z = this.sphere.position.z + 5;
     this.theta += this.ADD;
     this.renderer.render(this.scene, this.camera);
   }
 
   private createGeometry() {
-    const RADIUS =5, BASE_X = -20 ,  BASE_y = -20;
+    const RADIUS =4, BASE_X = -15 ,  BASE_y = -15;
     let material = new MeshPhongMaterial({color: 0x0450fb, shininess: 100, side: DoubleSide});
     for (let i = 0 ; i < 4; i++) {
         for (let j = 0; j < 4; j++) {
           let geometry = new SphereGeometry(RADIUS, 30, 30);
-          this.sphere = new Mesh(geometry, material);
-          this.sphere.position.x = BASE_X + j * 2 * (RADIUS + 0.5);
-          this.sphere.position.z = -2 * RADIUS * i;
-          this.sphere.position.y = BASE_y + i * RADIUS;
-          this.scene.add(this.sphere);
+          let sphere = new Mesh(geometry, material);
+          sphere.position.x = BASE_X + j * 2 * (RADIUS + 0.5);
+          sphere.position.z = -2 * RADIUS * i;
+          sphere.position.y = BASE_y + i * RADIUS;
+          this.scene.add(sphere);
         }
     }
+    let geometry = new SphereGeometry(2, 30, 30);
+    material = new MeshPhongMaterial({color: 0x00ff00, shininess: 100, side: DoubleSide});
+    this.sphere = new Mesh(geometry, material);
+    this.sphere.position.y = 20;
+    this.scene.add(this.sphere);
   }
 
   private switchCamera(){
@@ -140,7 +147,7 @@ export class AppComponent implements AfterViewInit {
   }
 
   private createLight() {
-    this.light = new SpotLight(0xffffff, 1);
+    this.light = new DirectionalLight(0xffffff, 1);
     this.light.position.set(0, 10, 15);
     this.scene.add(this.light);
   }
