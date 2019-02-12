@@ -7,7 +7,7 @@ import {
   Color, ConeGeometry, CylinderGeometry,
   DoubleSide,
   Mesh,
-  MeshPhongMaterial,
+  MeshPhongMaterial, OrthographicCamera,
   PerspectiveCamera, PlaneGeometry,
   Renderer,
   Scene, SphereGeometry, SpotLight, Vector3,
@@ -37,6 +37,7 @@ export class AppComponent implements AfterViewInit {
   ADD = 0.01;
   private axes: AxesHelper;
   theta = 0;
+  spheres: Mesh[] = [];
   constructor() {
 
     this.render = this.render.bind(this);
@@ -53,6 +54,7 @@ export class AppComponent implements AfterViewInit {
   ngAfterViewInit() {
     this.createScene();
     this.createCamera();
+    this.switchCamera();
     this.createAxes();
     this. createLight();
     this.createGeometry();
@@ -61,7 +63,7 @@ export class AppComponent implements AfterViewInit {
 
   private createScene() {
     this.scene = new Scene();
-    this.scene.background = new Color(0X000000);
+    this.scene.background = new Color(0Xffffff);
   }
 
   private createCamera() {
@@ -71,7 +73,7 @@ export class AppComponent implements AfterViewInit {
       this.nearClippingPane,
       this.farClippingPane
     );
-    this.camera.position.set(0, 10, 20);
+    this.camera.position.set(0, 0, 40);
 ;  }
 
   private getAspectRatio(): number {
@@ -112,25 +114,29 @@ export class AppComponent implements AfterViewInit {
   }
 
   private createGeometry() {
-    let geometry = new CylinderGeometry(5, 5, 5);
-    let material = new MeshPhongMaterial({color: 0x448844, shininess: 100, side: DoubleSide});
-    this.cylinder = new Mesh(geometry, material);
-    this.cylinder.position.set(6, 0, -2);
+    const RADIUS =5, BASE_X = -20 ,  BASE_y = -20;
+    let material = new MeshPhongMaterial({color: 0x0450fb, shininess: 100, side: DoubleSide});
+    for (let i = 0 ; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+          let geometry = new SphereGeometry(RADIUS, 30, 30);
+          this.sphere = new Mesh(geometry, material);
+          this.sphere.position.x = BASE_X + j * 2 * (RADIUS + 0.5);
+          this.sphere.position.z = -2 * RADIUS * i;
+          this.sphere.position.y = BASE_y + i * RADIUS;
+          this.scene.add(this.sphere);
+        }
+    }
+  }
 
-    let cgeometry = new SphereGeometry(5, 30, 30);
-    material = new MeshPhongMaterial({color: 0x693421, side: DoubleSide});
-    this.sphere = new Mesh(cgeometry, material);
-    this.sphere.position.set(-5, 5, 2);
-
-    let pgeometry  = new PlaneGeometry(1000, 1000, 50, 50);
-    let mat = new MeshPhongMaterial({ color: 0xabcdef, side: DoubleSide});
-    this.plane = new Mesh(pgeometry, mat);
-    this.plane.rotation.x = Math.PI / 2;
-    this.plane.position.y = -1;
-
-    this.scene.add(this.cylinder);
-    this.scene.add(this.sphere);
-    this.scene.add(this.plane);
+  private switchCamera(){
+    if( this.camera instanceof PerspectiveCamera ){
+      this.camera = new OrthographicCamera(-300, 300, 400, -400 , 1, 1000)
+      this.camera.zoom = 5;
+      this.camera.updateProjectionMatrix();
+    }else {
+      this.camera = new PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+      this.camera.position.set(0, 0, 40);
+    }
   }
 
   private createLight() {
