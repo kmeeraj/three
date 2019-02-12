@@ -32,8 +32,12 @@ export class AppComponent implements AfterViewInit {
   private cone: Mesh;
   private plane: Mesh;
   private sphere: Mesh;
+  private sphere1: Mesh;
+  private sphere2: Mesh;
   theta = 0;
   private light: PointLight;
+  private light1: PointLight;
+  private light2: PointLight;
   ADD = 0.03;
   private lightHelper: DirectionalLightHelper;
 
@@ -110,6 +114,16 @@ export class AppComponent implements AfterViewInit {
     this.sphere.position.x = this.light.position.x;
     this.sphere.position.y = this.light.position.y;
 
+    this.light1.position.z = 6 * Math.cos(this.theta);
+    this.light1.position.y = 6 * Math.sin(this.theta);
+    this.sphere1.position.y = this.light1.position.y;
+    this.sphere1.position.z = this.light1.position.z;
+
+    this.light2.position.x = 6 * Math.cos(this.theta);
+    this.light2.position.z = 6 * Math.sin(this.theta);
+    this.sphere2.position.z = this.light2.position.z;
+    this.sphere2.position.x = this.light2.position.x;
+
     this.theta += this.ADD;
     this.renderer.render(this.scene, this.camera);
   }
@@ -126,16 +140,23 @@ export class AppComponent implements AfterViewInit {
     this.sphere = new Mesh(geo, mat);
     this.scene.add(this.sphere);
 
+    this.sphere2 = new Mesh(geo, mat);
+    this.scene.add(this.sphere2);
+    this.sphere1 = new Mesh(geo, mat);
+    this.scene.add(this.sphere1);
+
     this.scene.add(this.cube);
 
   }
 
   private createLight() {
-    this.light = new PointLight(0xffffff, 2, 20 , 2);
-
-
+    this.light = new PointLight(0xff0000, 2, 20 , 2);
+    this.light1 = new PointLight(0x00ff00, 2, 20 , 2);
+    this.light2 = new PointLight(0x0000ff, 2, 20 , 2);
     // let ambient = new AmbientLight(0xeeeeee, 1);
     // this.scene.add(ambient);
     this.scene.add(this.light);
+    this.scene.add(this.light1);
+    this.scene.add(this.light2);
   }
 }
