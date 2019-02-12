@@ -106,11 +106,11 @@ export class AppComponent implements AfterViewInit {
   }
 
   public render() {
-    this.camera.lookAt(this.sphere.position);
+    // this.camera.lookAt(this.sphere.position);
     this.sphere.position.y = 20 * Math.sin(this.theta);
     this.sphere.position.z = 20 * Math.cos(this.theta);
-    this.camera.position.y = this.sphere.position.y;
-    this.camera.position.z = this.sphere.position.z + 5;
+    // this.camera.position.y = this.sphere.position.y;
+    // this.camera.position.z = this.sphere.position.z + 5;
     this.theta += this.ADD;
     this.renderer.render(this.scene, this.camera);
   }
