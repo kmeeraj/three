@@ -7,7 +7,7 @@ import {
   Color, ConeGeometry, DirectionalLight, DirectionalLightHelper,
   DoubleSide, HemisphereLight,
   Mesh, MeshBasicMaterial,
-  MeshPhongMaterial,
+  MeshPhongMaterial, Object3D,
   PerspectiveCamera, PlaneGeometry, PointLight,
   Renderer,
   Scene, SphereGeometry, SpotLight,
@@ -34,13 +34,33 @@ export class AppComponent implements AfterViewInit {
   private sphere: Mesh;
   private sphere1: Mesh;
   private sphere2: Mesh;
+  private target1: Object3D;
+  private target2: Object3D;
   theta = 0;
   private light: SpotLight;
-  private light1: PointLight;
-  private light2: PointLight;
-  ADD = 0.01;
+  private spotlight1: SpotLight;
+  private spotlight2: SpotLight;
+  ADD = 0.1;
   private lightHelper: DirectionalLightHelper;
+  cubes = [];
 
+  randomInRange(from, to){
+    let x = Math.random() * (to - from);
+    return x + from;
+  }
+
+  createCube() {
+    let w = this.randomInRange(5, 8 );
+    let h = this.randomInRange(5, 8);
+    let d = this.randomInRange(5, 8);
+    let geometry = new BoxGeometry(w, h, d);
+    let material = new MeshPhongMaterial({
+      color: Math.random() * 0xffffff
+    });
+    let cube = new Mesh(geometry, material);
+    cube.position.set(this.randomInRange(-20, 20), 0, this.randomInRange(-20, 20) );
+    this.cubes.push(cube);
+  }
   constructor() {
 
     this.render = this.render.bind(this);
@@ -61,6 +81,7 @@ export class AppComponent implements AfterViewInit {
 
     this.createGeometry();
     this. createLight();
+    this.createTragets();
     this.startRendering();
   }
 
@@ -109,37 +130,56 @@ export class AppComponent implements AfterViewInit {
   }
 
   public render() {
-    this.light.angle += this.ADD;
-    if ( this.light.angle > Math.PI / 2 || this.light.angle < 0 ) {
+    this.target1.position.x -= this.ADD;
+    this.target2.position.x += this.ADD;
+    if ( this.target1.position.x > 20 || this.target1.position.x < -20 ) {
       this.ADD *= -1;
     }
     this.renderer.render(this.scene, this.camera);
   }
 
   private createGeometry() {
-    let geometry = new BoxGeometry(5, 5, 5);
-    let material = new MeshPhongMaterial({color: 0xdff913, shininess: 100, side: DoubleSide});
-    this.cube = new Mesh(geometry, material);
-    this.cube.position.set(5, 0, 0);
 
     let geo = new BoxGeometry(2000, 1, 2000);
     let mat = new MeshPhongMaterial({color: 0x693421, side: DoubleSide});
     this.plane = new Mesh(geo, mat);
     this.plane.position.y = -1;
-
+    for (let i = 1; i <= 10; i++) {
+      this.createCube();
+    }
+    this.cubes.forEach( cube => this.scene.add(cube));
     this.scene.add(this.plane);
 
-    this.scene.add(this.cube);
+  }
+
+  private createTragets(){
+    this.target1 = new Object3D();
+    this.target1.position.set(20, 0, 0 );
+    this.spotlight1.target = this.target1;
+    this.scene.add(this.target1);
+
+    this.target2 = new Object3D();
+    this.target2.position.set(-10, 0, 0 );
+    this.spotlight2.target = this.target2;
+    this.scene.add(this.target2);
 
   }
 
   private createLight() {
-    this.light = new SpotLight(0xffffff, 1);
-    this.light.position.set(15, 20, 10);
-    this.light.angle = Math.PI / 20;
-    this.light.penumbra = 0.05;
-    this.light.decay = 2;
-    this.light.distance = 200;
-    this.scene.add(this.light);
+    this.spotlight1 = new SpotLight(0xffffff, 1);
+    this.spotlight1.position.set(15, 20, 10);
+    this.spotlight1.angle = Math.PI / 20;
+    this.spotlight1.penumbra = 0.05;
+    this.spotlight1.decay = 2;
+    this.spotlight1.distance = 200;
+    this.scene.add(this.spotlight1);
+
+    this.spotlight2 = new SpotLight(0xffffff, 1);
+    this.spotlight2.position.set(-15, 20, 10);
+    this.spotlight2.angle = Math.PI / 20;
+    this.spotlight2.penumbra = 0.05;
+    this.spotlight2.decay = 2;
+    this.spotlight2.distance = 200;
+    this.scene.add(this.spotlight2);
   }
 }
