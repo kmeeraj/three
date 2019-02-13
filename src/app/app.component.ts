@@ -55,7 +55,7 @@ export class AppComponent implements AfterViewInit {
   ngAfterViewInit() {
     this.createScene();
     this.createCamera();
-    this.createGeometry();
+
     this.createLight();
     this.startRendering();
     this.canvas.addEventListener('click', this.mouseclick.bind(this), false);
@@ -100,6 +100,7 @@ export class AppComponent implements AfterViewInit {
 
   public render() {
     this.renderer.render(this.scene, this.camera);
+
   }
 
   private createSphere(pos) {
@@ -110,28 +111,10 @@ export class AppComponent implements AfterViewInit {
     this.scene.add(sphere);
   }
 
-  private createGeometry() {
-
-    let spherematerial = new MeshPhongMaterial({color: 0x0450fb, shininess: 100, side: DoubleSide});
-    for (let i = 0 ; i < 4 ; i++) {
-      for ( let j = 0 ; j < 4; j++) {
-        let geometry = new SphereGeometry (this.RADIUS, 30 , 30);
-        let sphere = new Mesh( geometry, spherematerial);
-        sphere.position.set(this.BASE_X + j * 2 * (this.RADIUS + 0.5 ),
-                this.BASE_Y + i * this.RADIUS, -2 * this.RADIUS * i);
-        this.scene.add(sphere);
-      }
-    }
-
-  }
 
   private createLight() {
     this.light1 = new DirectionalLight(0xffffff,1);
-    this.light2 = new DirectionalLight(0xffffff,1);
-    this.light2.position.set(0, -5, 2);
     this.scene.add(this.light1);
-    this.scene.add(this.light2);
-
     this.rayCast = new Raycaster();
     this.mouse = new Vector2();
     this.mouse.x = this.mouse.y = -1;
@@ -142,7 +125,6 @@ export class AppComponent implements AfterViewInit {
     this.mouse.y = -(e.clientX / window.innerWidth) * 2 + 1;
 
     this.rayCast.setFromCamera(this.mouse, this.camera);
-    let intersects = this.rayCast.intersectObjects(this.scene.children);
-    intersects.forEach((i) => i.object.position.y += 1);
+    this.createSphere(this.rayCast.ray.at(200, new Vector3(0,0,0)));
   }
 }
