@@ -6,7 +6,7 @@ import {
   Camera,
   Color, ConeGeometry, CylinderGeometry,
   DoubleSide,
-  Mesh,
+  Mesh, MeshLambertMaterial,
   MeshPhongMaterial,
   PerspectiveCamera, PlaneGeometry,
   Renderer,
@@ -68,7 +68,7 @@ export class AppComponent implements AfterViewInit {
 
   private createScene() {
     this.scene = new Scene();
-    this.scene.background = new Color(0X000000);
+    this.scene.background = new Color(0xffffff);
   }
 
   private createCamera() {
@@ -78,7 +78,7 @@ export class AppComponent implements AfterViewInit {
       this.nearClippingPane,
       this.farClippingPane
     );
-    this.camera.position.set(0, 10, 20);
+    this.camera.position.set(0, 0, 100);
 ;  }
 
   private getAspectRatio(): number {
@@ -111,6 +111,7 @@ export class AppComponent implements AfterViewInit {
   }
 
   public render() {
+    this.camera.position.z -= 0.1;
     this.renderer.render(this.scene, this.camera);
   }
 
@@ -121,15 +122,15 @@ export class AppComponent implements AfterViewInit {
   }
 
   private createGeometry() {
-    let geometry = new BoxGeometry(5, 5 , 5);
-    for ( let i = 0; i <= 10 ; i++ ) {
-      let material = new MeshPhongMaterial({
+    let geometry = new BoxGeometry(this.randomInRange(1, 3), this.randomInRange(1, 3) , this.randomInRange(1, 3));
+    for ( let i = 0; i <= 150 ; i++ ) {
+      let material = new MeshLambertMaterial({
         color: Math.random() * 0xffffff,
-        side: DoubleSide, shininess: 100
+        side: DoubleSide
       });
       let cube = new Mesh(geometry, material);
-      cube.position.x = this.randomInRange(-20, 20);
-      cube.position.z = this.randomInRange(-10, 10);
+      cube.position.x = this.randomInRange(-40, 40);
+      cube.position.z = this.randomInRange(-40, 40);
       this.cubes.push(cube);
       this.scene.add(cube);
     }
@@ -139,13 +140,13 @@ export class AppComponent implements AfterViewInit {
   private onKeyDown(e) {
     console.log(e.keyCode);
     if (e.keyCode === this.LEFT) {
-      this.ADD = -0.2;
+      this.camera.position.x  -= 0.2;
     } else if (e.keyCode === this.RIGHT) {
-      this.ADD = 0.2;
+      this.camera.position.x  += 0.2;
     } else if (e.keyCode === this.UP) {
-        this.scene.rotation.x += 0.2;
+        this.camera.position.y  += 0.2;
     } else if (e.keyCode === this.DOWN) {
-      this.scene.rotation.x -= 0.2;
+      this.camera.position.y  -= 0.2;
     }
     console.log(this.ADD);
     this.cubes.forEach(cube => {console.log(this.ADD); cube.position.x += this.ADD; });
