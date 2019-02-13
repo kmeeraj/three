@@ -4,7 +4,7 @@ import {
   AxesHelper,
   BoxGeometry,
   Camera,
-  Color, ConeGeometry, CylinderGeometry,
+  Color, ConeGeometry, CylinderGeometry, DirectionalLight,
   DoubleSide,
   Mesh, MeshLambertMaterial,
   MeshPhongMaterial,
@@ -33,8 +33,8 @@ export class AppComponent implements AfterViewInit {
   private cube: Mesh;
   private cone: Mesh;
   private plane: Mesh;
-  private light: SpotLight;
-  ADD = 0.2;
+  private light: DirectionalLight;
+  ADD = 0.02;
   LEFT = 37;
   RIGHT = 39;
   UP = 38;
@@ -63,7 +63,7 @@ export class AppComponent implements AfterViewInit {
     this.createGeometry();
 
     this.startRendering();
-    document.addEventListener('keydown', (e) => this.onKeyDown(e), false);
+    document.addEventListener('click', (e) => this.onMouseClick(e), false);
   }
 
   private createScene() {
@@ -78,7 +78,7 @@ export class AppComponent implements AfterViewInit {
       this.nearClippingPane,
       this.farClippingPane
     );
-    this.camera.position.set(0, 0, 100);
+    this.camera.position.set(0, 0, 35);
 ;  }
 
   private getAspectRatio(): number {
@@ -111,30 +111,18 @@ export class AppComponent implements AfterViewInit {
   }
 
   public render() {
-    this.camera.position.z -= 0.1;
+   this.cube.rotation.x += this.ADD;
+    this.cube.rotation.y += this.ADD;
     this.renderer.render(this.scene, this.camera);
   }
-
-  randomInRange( from, to){
-    let x  = Math.random() * (to - from);
-    return from + x;
-
-  }
-
   private createGeometry() {
-    let geometry = new BoxGeometry(this.randomInRange(1, 3), this.randomInRange(1, 3) , this.randomInRange(1, 3));
-    for ( let i = 0; i <= 150 ; i++ ) {
-      let material = new MeshLambertMaterial({
-        color: Math.random() * 0xffffff,
-        side: DoubleSide
-      });
-      let cube = new Mesh(geometry, material);
-      cube.position.x = this.randomInRange(-40, 40);
-      cube.position.z = this.randomInRange(-40, 40);
-      this.cubes.push(cube);
-      this.scene.add(cube);
-    }
-
+    let geometry = new BoxGeometry(5, 5, 5);
+    let material = new MeshPhongMaterial({
+      color: 0xaf62ff, shininess: 100,
+      side: DoubleSide
+    });
+    this.cube = new Mesh(geometry, material);
+    this.scene.add(this.cube);
   }
 
   private onKeyDown(e) {
@@ -153,8 +141,15 @@ export class AppComponent implements AfterViewInit {
   }
 
   private createLight() {
-    this.light = new SpotLight(0xffffff, 1);
-    this.light.position.set(0, 10, 15);
+    this.light = new DirectionalLight(0xffffff, 1);
+    // this.light.position.set(0, 10, 15);
     this.scene.add(this.light);
+  }
+
+  private onMouseClick(e: MouseEvent) {
+    this.ADD *= -1;
+    let x = e.clientX;
+    let y = e.clientY;
+    console.log(" x " + x + " y" + y);
   }
 }
