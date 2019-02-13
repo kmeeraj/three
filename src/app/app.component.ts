@@ -3,7 +3,7 @@ import {
   BoxGeometry,
   Camera,
   Color, DirectionalLight,
-  DoubleSide, Mesh,
+  DoubleSide, Geometry, Mesh,
   MeshPhongMaterial,
   PerspectiveCamera,
   Raycaster,
@@ -31,9 +31,14 @@ export class AppComponent implements AfterViewInit {
   private light1: DirectionalLight;
   private light2: DirectionalLight;
   private rayCast: Raycaster;
-  private mouse: Vector3;
+  private mouse: Vector2;
   private spherematerial: MeshPhongMaterial;
   private boxMaterial: MeshPhongMaterial;
+  RADIUS = 5;
+  BASE_X = -20;
+  BASE_Y = -20;
+  ADD = 0.01;
+  theta = 0;
 
   constructor() {
     this.render = this.render.bind(this);
@@ -68,7 +73,7 @@ export class AppComponent implements AfterViewInit {
       this.nearClippingPane,
       this.farClippingPane
     );
-    this.camera.position.set(0, 10, 40);
+    this.camera.position.set(0, 0, 40);
   }
 
   private getAspectRatio(): number {
@@ -94,27 +99,29 @@ export class AppComponent implements AfterViewInit {
   }
 
   public render() {
-
-    this.sphere.material['color'].set(0x0450fb);
-    this.cube.material['color'].set(0xff4500);
-    let intersects = this.rayCast.intersectObjects(this.scene.children);
-    console.log(intersects[0]);
-    intersects.forEach((i) => i.object['material']['color'].set(0x00ff00));
     this.renderer.render(this.scene, this.camera);
   }
 
-  private createGeometry() {
-    let geometry = new SphereGeometry (5, 30 , 30);
-     this.spherematerial = new MeshPhongMaterial({color: 0x0450fb, shininess: 100, side: DoubleSide});
-    this.sphere = new Mesh(geometry, this.spherematerial);
-    this.sphere.position.set(1, 4, -10);
+  private createSphere(pos) {
+    let material = new MeshPhongMaterial({color: 0x4a57fa, shininess: 100, side: DoubleSide});
+    let geometry = new SphereGeometry(this.RADIUS, 30, 30);
+    let sphere = new Mesh(geometry, material);
+    sphere.position.set(pos.x, pos.y, pos.z);
+    this.scene.add(sphere);
+  }
 
-    let geo = new BoxGeometry(5, 5, 5);
-    this.boxMaterial = new MeshPhongMaterial({color: 0xff4500, shininess:100, side: DoubleSide});
-    this.cube = new Mesh(geo, this.boxMaterial);
-    this.cube.position.set(10, 4 , -10);
-    this.scene.add(this.cube);
-    this.scene.add(this.sphere);
+  private createGeometry() {
+
+    let spherematerial = new MeshPhongMaterial({color: 0x0450fb, shininess: 100, side: DoubleSide});
+    for (let i = 0 ; i < 4 ; i++) {
+      for ( let j = 0 ; j < 4; j++) {
+        let geometry = new SphereGeometry (this.RADIUS, 30 , 30);
+        let sphere = new Mesh( geometry, spherematerial);
+        sphere.position.set(this.BASE_X + j * 2 * (this.RADIUS + 0.5 ),
+                this.BASE_Y + i * this.RADIUS, -2 * this.RADIUS * i);
+        this.scene.add(sphere);
+      }
+    }
 
   }
 
@@ -126,14 +133,16 @@ export class AppComponent implements AfterViewInit {
     this.scene.add(this.light2);
 
     this.rayCast = new Raycaster();
-    this.mouse = new Vector3();
+    this.mouse = new Vector2();
     this.mouse.x = this.mouse.y = -1;
   }
 
   private mouseclick(e: MouseEvent) {
     this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
     this.mouse.y = -(e.clientX / window.innerWidth) * 2 + 1;
-    this.mouse.z = 1;
+
     this.rayCast.setFromCamera(this.mouse, this.camera);
+    let intersects = this.rayCast.intersectObjects(this.scene.children);
+    intersects.forEach((i) => i.object.position.y += 1);
   }
 }
